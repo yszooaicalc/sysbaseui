@@ -2,8 +2,7 @@
 ! function(win) {
 
     win.YSZ.prototype.init = function() {
-        var ythis = this;
-        layui.use(['jquery'], function() {
+        var ythis = this; 
             var $ = layui.jquery;
             if (ythis.options) {
                 ythis.render();
@@ -26,8 +25,7 @@
                         $(ythis.elem).appendTo(ythis.loaderricon());
                     }
                 });
-            }
-        });
+            } 
     };
 
 }(window);
