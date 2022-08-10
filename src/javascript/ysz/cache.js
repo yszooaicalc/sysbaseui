@@ -1,9 +1,11 @@
 ;
 ! function(win) {
     var cache_suffix = 'ysz_',
+        _cache = win.sessionStorage,
+        _stor = win.localStorage,
         /**
          * 删除缓存
-         * @param {*} obj 临时或持久缓存，window.sessionStorage，window.localStorage
+         * @param {*} obj 临时或持久缓存，window.sessionStorage ，window.localStorage
          * @param {string} seachkey 正则表达式，查找key 
          */
         remove_cache = function(obj, seachkey) {
@@ -62,7 +64,6 @@
                 return null;
             }
         };
-
     /**
      * 临时缓存
      * @param {*} key 键
@@ -71,7 +72,7 @@
      */
     win.YSZ.prototype.cache = function(key, val) {
         var k = (this.id || '') + '_' + key;
-        return cache_f.call(this, window.sessionStorage, k, val);
+        return cache_f.call(this, _cache, k, val);
     };
     /**
      * 持久化缓存
@@ -81,7 +82,7 @@
      */
     win.YSZ.prototype.store = function(key, val) {
         var k = (this.id || '') + '_' + key;
-        return cache_f.call(this, window.localStorage, k, val);
+        return cache_f.call(this, _stor, k, val);
     };
 
     /**
@@ -90,7 +91,7 @@
      * @param {string} seachkey 正则表达式，查找key 
      */
     win.YSZ.prototype.removeCache = function(seachkey) {
-        remove_cache.call(this, window.sessionStorage, seachkey);
+        remove_cache.call(this, _cache, seachkey);
     };
     /**
      * 
@@ -98,7 +99,7 @@
      * @param {string} seachkey 正则表达式，查找key 
      */
     win.YSZ.prototype.removeStore = function(seachkey) {
-        remove_cache.call(this, window.localStorage, seachkey);
+        remove_cache.call(this, _stor, seachkey);
     };
 
 }(window);
