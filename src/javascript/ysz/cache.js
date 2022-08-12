@@ -1,14 +1,23 @@
 ;
-! function(win) {
+! function (win) {
+    var _cache, _stor;
+    if (win.sessionStorage) {
+        _cache = win.sessionStorage;
+    } else {
+
+    }
+
+    if (win.localStorage) {
+        _stor = win.localStorage;
+    }
+
     var cache_suffix = 'ysz_',
-        _cache = win.sessionStorage,
-        _stor = win.localStorage,
         /**
          * 删除缓存
          * @param {*} obj 临时或持久缓存，window.sessionStorage ，window.localStorage
          * @param {string} seachkey 正则表达式，查找key 
          */
-        remove_cache = function(obj, seachkey) {
+        remove_cache = function (obj, seachkey) {
             if (!seachkey) return;
             var keys = Object.keys(obj),
                 reg = new RegExp(seachkey);
@@ -19,9 +28,9 @@
                 }
             }
         },
-        cache_f = function(obj, key, val) {
+        cache_f = function (obj, key, val) {
             if (!/^\w+$/.test(key)) {
-                this.alert('缓存可以不能有特殊符号！');
+                this.win_alert('缓存可以不能有特殊符号！');
                 return;
             }
             try {
@@ -64,13 +73,14 @@
                 return null;
             }
         };
+
     /**
      * 临时缓存
      * @param {*} key 键
      * @param {*} val 值
      * @returns 
      */
-    win.YSZ.prototype.cache = function(key, val) {
+    win.YSZ.prototype.cache = function (key, val) {
         var k = (this.id || '') + '_' + key;
         return cache_f.call(this, _cache, k, val);
     };
@@ -80,7 +90,7 @@
      * @param {*} val 值 
      * @returns 
      */
-    win.YSZ.prototype.store = function(key, val) {
+    win.YSZ.prototype.store = function (key, val) {
         var k = (this.id || '') + '_' + key;
         return cache_f.call(this, _stor, k, val);
     };
@@ -90,7 +100,7 @@
      * 清除缓存 
      * @param {string} seachkey 正则表达式，查找key 
      */
-    win.YSZ.prototype.removeCache = function(seachkey) {
+    win.YSZ.prototype.removeCache = function (seachkey) {
         remove_cache.call(this, _cache, seachkey);
     };
     /**
@@ -98,7 +108,7 @@
      * 清除持久化缓存
      * @param {string} seachkey 正则表达式，查找key 
      */
-    win.YSZ.prototype.removeStore = function(seachkey) {
+    win.YSZ.prototype.removeStore = function (seachkey) {
         remove_cache.call(this, _stor, seachkey);
     };
 

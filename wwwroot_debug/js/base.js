@@ -784,15 +784,305 @@
 }(window); //gulp build: layui-footer
 
 
-window.YSZ=function(){}; 
- window.YSZ.prototype.msg=function(){
-  layui.use(['layer'],function(){ 
-    layer.msg('Hello World');
-  });
-};
+;
+! function (win) {
+    win.default = {
+        top_zindex: 202208161517,
+        elem: 'body'
+    };
 
+    /**
+     * 
+     * @param {*} opt 组件参数或组件ID
+     * @param {*} elem 绑定组件的元素 
+     */
+    win.YSZ = function (opt, elem) {
+        var y = this;
+        layui.use(['jquery'], function () {
+            var $ = layui.jquery;
+            y.$ = $;
+            y.elem = elem;
+            if (!opt || !elem || opt && typeof opt !== 'string' && typeof opt !== 'number' && typeof opt !== 'object') {
+                y.win_alert('传输参数不正确，无法正常运行');
+                return;
+            }
+            if (typeof opt === 'number') {
+                //通过key获取组件信息 
+                y.id = opt;
+                y.init();
+            } else if (typeof opt === 'string') {
+                //通过key获取组件信息 
+                y.openid = opt;
+                y.init();
+            } else if (typeof opt === 'object') {
+                y.options = opt;
+                y.id = y.options.id;
+                y.init();
+            }
+        });
+    };
+}(window);
+;
+! function (win) {
+    win.YSZ.prototype.ajax = function (opt) {
+        var y = this,
+            $ = y.$,
+            option = $.extend(true, {}, {
+                type: 'post',
+                dataType: 'json',
+                timeout: 600000,
+                cache: true,
+            }, opt),
+            post_data = function (data) {
+                if (!data) { data = {}; }
+                data.token = y.token();
+                return { requestData: JSON.stringify(data) };
+            };
+        option['data'] = post_data(opt['data'] || {});
+        $.ajax(option);
+    };
+
+}(window);
+;
+! function (win) {
+    var _cache, _stor;
+    if (win.sessionStorage) {
+        _cache = win.sessionStorage;
+    } else {
+
+    }
+
+    if (win.localStorage) {
+        _stor = win.localStorage;
+    }
+
+    var cache_suffix = 'ysz_',
+        /**
+         * 删除缓存
+         * @param {*} obj 临时或持久缓存，window.sessionStorage ，window.localStorage
+         * @param {string} seachkey 正则表达式，查找key 
+         */
+        remove_cache = function (obj, seachkey) {
+            if (!seachkey) return;
+            var keys = Object.keys(obj),
+                reg = new RegExp(seachkey);
+            for (var i = 0; i <= keys.length; i++) {
+                var k = keys[i];
+                if (reg.test(k)) {
+                    obj.removeItem(k);
+                }
+            }
+        },
+        cache_f = function (obj, key, val) {
+            if (!/^\w+$/.test(key)) {
+                this.win_alert('缓存可以不能有特殊符号！');
+                return;
+            }
+            try {
+                if (!key || !obj) { return null; }
+                var cachekey = cache_suffix + key;
+                if (val === '' || val === null) {
+                    remove_cache.call(this, obj, '^' + cachekey);
+                    return;
+                }
+                var k_len = 500000;
+                if (val === undefined) { //获取 
+                    var valstr = '',
+                        val_par_i = 0,
+                        val_par = '';
+                    do {
+                        val_par = obj.getItem(cachekey + '_' + val_par_i);
+                        if (!val_par) break;
+                        valstr += val_par;
+                        val_par_i++;
+                    } while (val_par);
+                    if (valstr) {
+                        return JSON.parse(valstr || 'null');
+                    }
+                } else { //写入
+                    //先删除
+                    remove_cache.call(this, obj, '^' + cachekey);
+                    //再写入
+                    var valstr = JSON.stringify(val),
+                        val_par_i = 0,
+                        val_par;
+                    do {
+                        val_par = valstr.substring(val_par_i * k_len, (val_par_i + 1) * k_len);
+                        if (!val_par) break;
+                        obj.setItem(cachekey + '_' + val_par_i, val_par);
+                        val_par_i++;
+                    } while (val_par);
+                }
+                return val;
+            } catch (e) {
+                return null;
+            }
+        };
+
+    /**
+     * 临时缓存
+     * @param {*} key 键
+     * @param {*} val 值
+     * @returns 
+     */
+    win.YSZ.prototype.cache = function (key, val) {
+        var k = (this.id || '') + '_' + key;
+        return cache_f.call(this, _cache, k, val);
+    };
+    /**
+     * 持久化缓存
+     * @param {*} key 键
+     * @param {*} val 值 
+     * @returns 
+     */
+    win.YSZ.prototype.store = function (key, val) {
+        var k = (this.id || '') + '_' + key;
+        return cache_f.call(this, _stor, k, val);
+    };
+
+    /**
+     * 
+     * 清除缓存 
+     * @param {string} seachkey 正则表达式，查找key 
+     */
+    win.YSZ.prototype.removeCache = function (seachkey) {
+        remove_cache.call(this, _cache, seachkey);
+    };
+    /**
+     * 
+     * 清除持久化缓存
+     * @param {string} seachkey 正则表达式，查找key 
+     */
+    win.YSZ.prototype.removeStore = function (seachkey) {
+        remove_cache.call(this, _stor, seachkey);
+    };
+
+}(window);
+;
+! function(win) {
+    win.YSZ.prototype.getComponentData = function() {
+        var ythis = this,
+            opt = {};
+        if (this.id) {
+            opt = { id: this.id }
+        } else if (this.openid) {
+            opt = { openid: this.openid }
+        }
+        this.ajax({data: opt});
+    };
+}(window);
+;
+! function (win) {
+    win.YSZ.prototype.init = function () {
+        var defer = $.Deferred(),
+            ythis = this,
+            $ = layui.jquery;
+        if (ythis.options) {
+            ythis.render();
+        } else {
+            if (ythis.elem && $(ythis.elem).length > 0) {
+                $(ythis.elem).empty();
+                $(ythis.elem).appendTo(ythis.loadingicon());
+            }
+            // ythis.getComponentData((rows) => {
+            //     if (rows && rows.length > 0) {
+            //         for (var i = 0; i < rows.length; i++) {
+            //             var row = rows[i];
+            //             ythis.options = row;
+            //             ythis.render();
+            //         }
+            //     }
+            // }, (err) => {
+            //     if (ythis.elem && $(ythis.elem).length > 0) {
+            //         $(ythis.elem).empty();
+            //         $(ythis.elem).appendTo(ythis.loaderricon());
+            //     }
+            // });
+        }
+        return defer;
+    };
+
+}(window);
+;
+! function(win) {
+    win.YSZ.prototype.loaderricon = function(msg) {
+        var msghtml = '<div>' + (msg || '') + '</div>';
+
+    };
+
+}(window);
+;
+! function(win) {
+    win.YSZ.prototype.loadingicon = function(msg) {
+        var msghtml = '<div>' + (msg || '') + '</div>';
+
+    };
+
+}(window);
+;
+! function(win) {
+    win.YSZ.prototype.render = function() {
+        var ythis = this;
+        if (!ythis.options) return;
+        layui.use(['jquery'], function() {
+            var $ = layui.jquery,
+                elem = ythis.elem || ythis.options.elem || win.default.elem;
+            if ($(elem).length == 0) return;
+            $(elem).empty();
+
+        });
+    };
+
+}(window);
+;
+! function(win) {
+    /**
+     * 全部替换
+     * @param {string} searchValue 
+     * @param {string} replaceValue 
+     * @returns 
+     */
+    String.prototype.replaceAll = function(searchValue, replaceValue) {
+        return this.replace(new RegExp(searchValue, "gm"), replaceValue);
+    };
+
+}(window);
+;
+! function (win) {
+    win.YSZ.prototype.win_alert = function (msg, options, showOnTop) {
+        var y = this,
+            $ = layui.jquery,
+            defer = $.Deferred();
+        layui.use(['layer'], function () {
+            var alertindex = layer.alert(msg, options || {}, function () {
+                layer.close(alertindex);
+                defer.resolve(alertindex);
+            });
+            if (showOnTop || showOnTop === undefined) {
+                $('.layui-layer-shade').css('z-index', y.top_zindex || win.default.top_zindex);
+                $('.layui-layer-shade').next('[type="dialog"]').css('z-index', y.top_zindex || win.default.top_zindex);
+            }
+        });
+        return defer;
+    };
+}(window);
+;
+! function(win) {
+    win.YSZ.prototype.win_msg = function(msg, options, func, showTop, callback) {
+        var ythis = this;
+        layui.use(['layer'], function() {
+            var msgindex = layer.msg(msg, options, func);
+            if (showTop || showTop === undefined) {
+                $('.layui-layer-shade').css('z-index', ythis.top_zindex || win.default.top_zindex);
+                $('.layui-layer-shade').next('[type="dialog"]').css('z-index', ythis.top_zindex || win.default.top_zindex);
+            }
+            if (typeof callback === 'function') {
+                callback.call(ythis, alertindex);
+            }
+        });
+    };
+}(window);
 ;!function(win){
-    "use strict";
-
-    win.ysz = win.layui;
+    "use strict"; 
+    
 }(window);
