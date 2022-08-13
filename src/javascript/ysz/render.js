@@ -1,15 +1,13 @@
 ;
-! function(win) {
-    win.YSZ.prototype.render = function() {
-        var ythis = this;
-        if (!ythis.options) return;
-        layui.use(['jquery'], function() {
+! function (win) {
+    "use strict";
+    win.YSZ.prototype.init = function () {
+        var y = this;
+        layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
-                elem = ythis.elem || ythis.options.elem || win.default.elem;
-            if ($(elem).length == 0) return;
-            $(elem).empty();
+                yu = layui.yszutil;
+            $(y.elem).empty();
 
         });
     };
-
 }(window);
