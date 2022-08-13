@@ -31,7 +31,7 @@ function layuimodjs() {
 }
 
 function ext_modulesjs() {
-    return src('src/javascript/ext_modules/*.js')
+    return src('src/javascript/ext_modules/**/*.js')
         .pipe(uglify())
         .pipe(dest('wwwroot/js/ext_modules'))
 }
@@ -87,7 +87,7 @@ function layuimodjs_debug() {
 }
 
 function ext_modulesjs_debug() {
-    return src('src/javascript/ext_modules/*.js')
+    return src('src/javascript/ext_modules/**/*.js')
         .pipe(dest('wwwroot_debug/js/ext_modules'))
 }
 //--------------------base--------------

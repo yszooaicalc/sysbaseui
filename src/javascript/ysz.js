@@ -1,6 +1,8 @@
 ;
 ! function (win) {
     "use strict";
+
+
     /**
      * 
      * @param {*} id 组件ID
@@ -15,6 +17,6 @@
             return;
         }
         y.com = {};
-        y.init();
+        y.barchart();
     };
 }(window);
