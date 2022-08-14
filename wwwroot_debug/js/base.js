@@ -809,13 +809,13 @@
     win.YSZ = function (id, elem) {
         var y = this;
         y.id = id;
-        y.elem = elem || 'body';
+        y.elem = elem;
         if (!id || typeof id !== 'number') {
             console.error('传输参数不正确，无法正常运行!');
             return;
         }
-        y.com = {};
-        y.barchart();
+        y.com = { CODE: 'func_alert', PARAMLIST: ['test'] };
+        y.init();
     };
 }(window);
 ;
@@ -826,8 +826,10 @@
         layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
                 yu = layui.yszutil;
-            $(y.elem).empty();
-            $(y.elem).appendTo(yu.loadhtml());
+            if (y.elem) {
+                $(y.elem).empty();
+                $(y.elem).appendTo(yu.loadhtml());
+            }
             if (y.com) {
                 y.render();
             } else if (y.id) {
@@ -835,32 +837,44 @@
                     this.com = com;
                     y.render();
                 }).fail(function (err) {
-                    $(y.elem).empty();
-                    $(y.elem).appendTo(yu.errhtml(err));
+                    if (y.elem) {
+                        $(y.elem).empty();
+                        $(y.elem).appendTo(yu.errhtml(err));
+                    }
                 });
             } else {
-                $(y.elem).empty();
-                $(y.elem).appendTo(yu.errhtml());
+                if (y.elem) {
+                    $(y.elem).empty();
+                    $(y.elem).appendTo(yu.errhtml());
+                }
             }
         });
+        return this;
     };
 }(window);
 ;
 ! function (win) {
     "use strict";
-    win.YSZ.prototype.init = function () {
+    win.YSZ.prototype.render = function () {
         var y = this;
         layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
                 yu = layui.yszutil;
-            $(y.elem).empty();
-
+            if (y.com) {
+                if (y.elem) { $(y.elem).empty(); }
+                var comcode = y.com.CODE,
+                    comf = y[comcode];
+                if (typeof comf === 'function') {
+                    comf(...y.com.PARAMLIST);
+                }
+            }
         });
+        return this;
     };
 }(window);
 ;
 ! function (win) {
-    win.YSZ.prototype.barchart = function (msg, options, func, showOnTop, callback) {
+    win.YSZ.prototype.com_barchart = function (msg, options, func, showOnTop, callback) {
         var y = this;
         layui.use(['jquery', 'yszutil', 'echarts'], function () {
             var $ = layui.jquery,
@@ -887,11 +901,12 @@
             myChart.setOption(option);
 
         });
+        return this;
     };
 }(window); 
 ;
 ! function (win) {
-    win.YSZ.prototype.alert = function (msg, options, func, showOnTop, callback) {
+    win.YSZ.prototype.func_alert = function (msg, options, func, showOnTop, callback) {
         var y = this;
         layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
@@ -905,11 +920,12 @@
                 callback.call(ythis, alertindex);
             }
         });
+        return this;
     };
 }(window); 
 ;
 ! function (win) {
-    win.YSZ.prototype.msg = function (msg, options, func, showTop, callback) {
+    win.YSZ.prototype.func_msg = function (msg, options, func, showTop, callback) {
         var ythis = this;
         layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
@@ -923,5 +939,6 @@
                 callback.call(ythis, msgindex);
             }
         });
+        return this;
     };
 }(window);

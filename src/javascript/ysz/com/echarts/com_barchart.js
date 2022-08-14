@@ -1,6 +1,6 @@
 ;
 ! function (win) {
-    win.YSZ.prototype.barchart = function (msg, options, func, showOnTop, callback) {
+    win.YSZ.prototype.com_barchart = function (msg, options, func, showOnTop, callback) {
         var y = this;
         layui.use(['jquery', 'yszutil', 'echarts'], function () {
             var $ = layui.jquery,
@@ -27,5 +27,6 @@
             myChart.setOption(option);
 
         });
+        return this;
     };
 }(window); 

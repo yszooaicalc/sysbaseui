@@ -43,7 +43,7 @@ function basecss() {
         .pipe(dest('wwwroot/css'))
 }
 function basejs() {
-    return src(['src/javascript/layui_config.js',
+    return src(['src/javascript/ysz_config.js',
         'src/javascript/layui.js',
         'src/javascript/ysz.js',
         'src/javascript/ysz/**/*.js'
@@ -99,7 +99,7 @@ function basecss_debug() {
 }
 
 function basejs_debug() {
-    return src(['src/javascript/layui_config.js',
+    return src(['src/javascript/ysz_config.js',
         'src/javascript/layui.js',
         'src/javascript/ysz.js',
         'src/javascript/ysz/**/*.js'

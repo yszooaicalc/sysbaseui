@@ -1,6 +1,6 @@
 ;
 ! function (win) {
-    win.YSZ.prototype.alert = function (msg, options, func, showOnTop, callback) {
+    win.YSZ.prototype.com_alert = function (msg, options, func, showOnTop, callback) {
         var y = this;
         layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
@@ -14,5 +14,6 @@
                 callback.call(ythis, alertindex);
             }
         });
+        return this;
     };
 }(window); 

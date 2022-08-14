@@ -11,12 +11,12 @@
     win.YSZ = function (id, elem) {
         var y = this;
         y.id = id;
-        y.elem = elem || 'body';
+        y.elem = elem;
         if (!id || typeof id !== 'number') {
             console.error('传输参数不正确，无法正常运行!');
             return;
         }
-        y.com = {};
-        y.barchart();
+        y.com = { CODE: 'func_alert', PARAMLIST: ['test'] };
+        y.init();
     };
 }(window);

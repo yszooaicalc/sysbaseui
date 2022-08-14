@@ -125,6 +125,38 @@
                     option['data'] = post_data(opt['data'] || {});
                     $.ajax(option);
                 },
+                datatypechange: function (val, type) {
+                    var rv = null;
+                    if (type == 0) {//number
+                        rv = parseFloat(val);
+                    } else if (type == 1) {//string
+                        rv = val;
+                    } else if (type == 2) {//datetime
+                        rv = val ? new Date(val) : null;
+                    } else if (type == 3) {//json
+                        rv = val ? JSON.parse(val) : null;
+                    }
+                    return rv
+                },
+                reformcomdata: function (com) {
+                    var yu = this;
+                    var newcom = $.extend({}, com, {
+                        PARAMLIST: yu.reformcomparamdata(com.PARAMLIST, 0)
+                    });
+                    return newcom;
+                },
+                reformcomparamdata: function (paramlist, pid) {
+                    var newpl = [];
+                    for (var i = 0; i >= 0 && i < paramlist.length; i++) {
+                        var p = paramlist[i];
+                        if (p.PID == pid) {
+                            paramlist.splice(i, 1);
+                            i--;
+                            newpl.push(datatypechange(p.VALUE, p.DATATYPE));
+                        }
+                    }
+                    return newpl;
+                },
                 getcomdata: function (id) {
                     var yu = this,
                         defer = $.Deferred(),
@@ -146,7 +178,7 @@
                                 $.each(data.rows, function (i, n) {
                                     yu.store(comdata_cache_key + id, n);
                                     if (n.id == id) {
-                                        com = n;
+                                        com = yu.reformcomdata(n);
                                     }
                                 });
                             }
