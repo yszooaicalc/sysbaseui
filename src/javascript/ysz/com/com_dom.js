@@ -8,9 +8,9 @@
             if (y.elem) {
                 var $tag = $(tagname).appendTo($(y.elem)).attr({ id: y.id }).attr(attr).data('binddata', binddata);
                 $tag.click(function () {
-                    yu.events.call(this, y, 'click');
+                    yu.bind_event.call(this, y, 'click');
                 });
-                out_events.call(y, 'click', () => { $tag.trigger('click'); });
+                bind_trigger_event.call(y, 'click', () => { $tag.trigger('click'); });
             }
         });
         return y;

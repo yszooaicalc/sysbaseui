@@ -210,7 +210,7 @@
                         var d = yszutil.functions[n.targetcode].call(y, {});
                     }
                 },
-                events: function (y, eventcode) {
+                bind_event: function (y, eventcode) {
                     var rs = y.relations;
                     if (rs && rs.length > 0) {
                         $.each(rs, function (i, n) {
@@ -220,7 +220,7 @@
                         });
                     }
                 },
-                out_events: function () { },
+                bind_trigger_event: function () { },
                 functions: {
 
                 }
