@@ -204,8 +204,27 @@
                 errhtml: function (msg) {
                     var html = '<div>' + (msg || '') + '</div>';
                     return html;
+                },
+                event_handle: function () {
+                    if (n.targettype == 'function') {
+                        var d = yszutil.functions[n.targetcode].call(y, {});
+                    }
+                },
+                events: function (y, eventcode) {
+                    var rs = y.relations;
+                    if (rs && rs.length > 0) {
+                        $.each(rs, function (i, n) {
+                            if (n.eventcode == eventcode) {
+
+                            }
+                        });
+                    }
+                },
+                functions: {
+
                 }
             };
+
         /**
              * 全部替换
              * @param {string} searchValue 
