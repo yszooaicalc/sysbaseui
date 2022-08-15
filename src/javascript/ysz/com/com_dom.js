@@ -5,13 +5,14 @@
         layui.use(['jquery', 'layer', 'yszutil'], function () {
             var $ = layui.jquery,
                 yu = layui.yszutil;
-            if (this.elem) {
-                var $tag = $(tagname).appendTo($(this.elem)).attr({ id: this.id }).attr(attr).data('binddata', binddata);
+            if (y.elem) {
+                var $tag = $(tagname).appendTo($(y.elem)).attr({ id: y.id }).attr(attr).data('binddata', binddata);
                 $tag.click(function () {
                     yu.events.call(this, y, 'click');
                 });
+                out_events.call(y, 'click', () => { $tag.trigger('click'); });
             }
         });
-        return this;
+        return y;
     };
 }(window); 

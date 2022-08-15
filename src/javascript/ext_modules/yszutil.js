@@ -220,6 +220,7 @@
                         });
                     }
                 },
+                out_events: function () { },
                 functions: {
 
                 }
