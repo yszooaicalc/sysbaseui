@@ -14,6 +14,6 @@
                 callback.call(ythis, alertindex);
             }
         });
-        return this;
+        return y;
     };
 }(window); 

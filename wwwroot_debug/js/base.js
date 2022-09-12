@@ -1,10 +1,10 @@
 ;
 ! function (win) {
-    "use strict";
-    win.LAYUI_GLOBAL = {
-        base: '/js/ext_modules/'
-        , version: '0.0.1'//  版本号 
-    };
+  "use strict";
+  win.LAYUI_GLOBAL = {
+    base: '/js/ext_modules/'
+    , version: '0.0.1'//  版本号 
+  };
 }(window);
 /**
  * Layui
@@ -798,147 +798,184 @@
 
 ;
 ! function (win) {
-    "use strict";
+  "use strict";
 
+  win.YSZOBJ = {};
 
-    /**
-     * 
-     * @param {*} id 组件ID
-     * @param {*} elem 绑定组件的元素 
-     */
-    win.YSZ = function (id, elem) {
-        var y = this;
-        y.id = id;
-        y.elem = elem;
-        if (!id || typeof id !== 'number') {
-            console.error('传输参数不正确，无法正常运行!');
-            return;
+  /**
+   * 
+   * @param {*} id 组件ID
+   * @param {*} elem 绑定组件的元素 
+   */
+  win.YSZ = function (id, elem) {
+    if (win.YSZOBJ[id + '']) {
+      //this = win.YSZOBJ[id];
+      this.idd = 0;
+      return win.YSZOBJ[id + ''];
+    }
+    win.YSZOBJ[id + ''] = this;
+    var y = this;
+    y.id = id;
+    y.elem = elem;
+    if (!id || typeof id !== 'number') {
+      console.error('传输参数不正确，无法正常运行!');
+      return;
+    }
+    y.com = { CODE: 'func_alert', PARAMLIST: ['test'] };
+    return;
+    y.init();
+  };
+}(window);
+;
+! function (win) {
+  "use strict";
+  win.YSZ.prototype.init = function () {
+    var y = this;
+    layui.use(['jquery', 'layer', 'yszutil'], function () {
+      var $ = layui.jquery,
+        yu = layui.yszutil;
+      if (y.elem) {
+        $(y.elem).empty();
+        $(y.elem).appendTo(yu.loadhtml());
+      }
+      if (y.com) {
+        y.render();
+      } else if (y.id) {
+        yu.getobjectdata(y.id).done(function (com) {
+          y.com = com;
+          y.render();
+        }).fail(function (err) {
+          if (y.elem) {
+            $(y.elem).empty();
+            $(y.elem).appendTo(yu.errhtml(err));
+          }
+        });
+      } else {
+        if (y.elem) {
+          $(y.elem).empty();
+          $(y.elem).appendTo(yu.errhtml());
         }
-        y.com = { CODE: 'func_alert', PARAMLIST: ['test'] };
-        y.init();
-    };
+      }
+    });
+    return y;
+  };
 }(window);
 ;
 ! function (win) {
-    "use strict";
-    win.YSZ.prototype.init = function () {
-        var y = this;
-        layui.use(['jquery', 'layer', 'yszutil'], function () {
-            var $ = layui.jquery,
-                yu = layui.yszutil;
-            if (y.elem) {
-                $(y.elem).empty();
-                $(y.elem).appendTo(yu.loadhtml());
-            }
-            if (y.com) {
-                y.render();
-            } else if (y.id) {
-                yu.getcomdata(y.id).done(function (com) {
-                    this.com = com;
-                    y.render();
-                }).fail(function (err) {
-                    if (y.elem) {
-                        $(y.elem).empty();
-                        $(y.elem).appendTo(yu.errhtml(err));
-                    }
-                });
-            } else {
-                if (y.elem) {
-                    $(y.elem).empty();
-                    $(y.elem).appendTo(yu.errhtml());
-                }
-            }
-        });
-        return this;
-    };
+  "use strict";
+  win.YSZ.prototype.render = function () {
+    var y = this;
+    layui.use(['jquery', 'layer', 'yszutil'], function () {
+      var $ = layui.jquery,
+        yu = layui.yszutil;
+      if (y.com) {
+        if (y.elem) { $(y.elem).empty(); }
+        var comcode = y.com.CODE,
+          comf = y['com_' + comcode];
+        if (typeof comf === 'function') {
+          comf(...y.com.PARAMLIST);
+        }
+      }
+    });
+    return y;
+  };
 }(window);
 ;
 ! function (win) {
-    "use strict";
-    win.YSZ.prototype.render = function () {
-        var y = this;
-        layui.use(['jquery', 'layer', 'yszutil'], function () {
-            var $ = layui.jquery,
-                yu = layui.yszutil;
-            if (y.com) {
-                if (y.elem) { $(y.elem).empty(); }
-                var comcode = y.com.CODE,
-                    comf = y[comcode];
-                if (typeof comf === 'function') {
-                    comf(...y.com.PARAMLIST);
-                }
-            }
-        });
-        return this;
-    };
-}(window);
-;
-! function (win) {
-    win.YSZ.prototype.com_barchart = function (msg, options, func, showOnTop, callback) {
-        var y = this;
-        layui.use(['jquery', 'yszutil', 'echarts'], function () {
-            var $ = layui.jquery,
-                yu = layui.yszutil,
-                echarts = layui.echarts;
+  win.YSZ.prototype.com_dom = function (tagname, attr, binddata) {
+    var y = this;
+    layui.use(['jquery', 'layer', 'yszutil'], function () {
+      var $ = layui.jquery,
+        yu = layui.yszutil,
+        $tag;
+      if (y.elem) {
+        $tag = $(tagname).appendTo($(y.elem)).attr({ id: y.id }).attr(attr).data('binddata', binddata);
+        //事件绑定
+        $tag.click(function () {
 
-            // 接下来的使用就跟之前一样，初始化图表，设置配置项
-            var myChart = echarts.init($(y.elem)[0]);
-            var option = {
-                xAxis: {
-                    type: 'category',
-                    data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
-                },
-                yAxis: {
-                    type: 'value'
-                },
-                series: [
-                    {
-                        data: [150, 230, 224, 218, 135, 147, 260],
-                        type: 'line'
-                    }
-                ]
-            };
-            myChart.setOption(option);
+          //事件触发
+          yu.bind_trigger_event.call(this, y, 'click');
+        });
+      }
+      //事件触发方法定义
+      y.event_click = function () {
+        if ($tag) $tag.trigger('click');
+      }
+      //方法定义
+      y.func_getdata = function () {
+        return [];
+      };
+    });
+    return y;
+  };
+}(window);
+;
+! function (win) {
+  win.YSZ.prototype.com_barchart = function (msg, options, func, showOnTop, callback) {
+    var y = this;
+    layui.use(['jquery', 'yszutil', 'echarts'], function () {
+      var $ = layui.jquery,
+        yu = layui.yszutil,
+        echarts = layui.echarts;
 
-        });
-        return this;
-    };
-}(window); 
+      // 接下来的使用就跟之前一样，初始化图表，设置配置项
+      var myChart = echarts.init($(y.elem)[0]);
+      var option = {
+        xAxis: {
+          type: 'category',
+          data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        },
+        yAxis: {
+          type: 'value'
+        },
+        series: [
+          {
+            data: [150, 230, 224, 218, 135, 147, 260],
+            type: 'line'
+          }
+        ]
+      };
+      myChart.setOption(option);
+
+    });
+    return this;
+  };
+}(window);
 ;
 ! function (win) {
-    win.YSZ.prototype.func_alert = function (msg, options, func, showOnTop, callback) {
-        var y = this;
-        layui.use(['jquery', 'layer', 'yszutil'], function () {
-            var $ = layui.jquery,
-                yu = layui.yszutil,
-                alertindex = layer.alert(msg, options, func);
-            if (showOnTop || showOnTop === undefined) {
-                $('.layui-layer-shade').css('z-index', yu.top_zindex);
-                $('.layui-layer-shade').next('[type="dialog"]').css('z-index', yu.top_zindex);
-            }
-            if (typeof callback === 'function') {
-                callback.call(ythis, alertindex);
-            }
-        });
-        return this;
-    };
-}(window); 
+  win.YSZ.prototype.com_alert = function (msg, options, func, showOnTop, callback) {
+    var y = this;
+    layui.use(['jquery', 'layer', 'yszutil'], function () {
+      var $ = layui.jquery,
+        yu = layui.yszutil,
+        alertindex = layer.alert(msg, options, func);
+      if (showOnTop || showOnTop === undefined) {
+        $('.layui-layer-shade').css('z-index', yu.top_zindex);
+        $('.layui-layer-shade').next('[type="dialog"]').css('z-index', yu.top_zindex);
+      }
+      if (typeof callback === 'function') {
+        callback.call(ythis, alertindex);
+      }
+    });
+    return this;
+  };
+}(window);
 ;
 ! function (win) {
-    win.YSZ.prototype.func_msg = function (msg, options, func, showTop, callback) {
-        var ythis = this;
-        layui.use(['jquery', 'layer', 'yszutil'], function () {
-            var $ = layui.jquery,
-                yu = layui.yszutil,
-                msgindex = layer.msg(msg, options, func);
-            if (showTop || showTop === undefined) {
-                $('.layui-layer-shade').css('z-index', yu.top_zindex);
-                $('.layui-layer-shade').next('[type="dialog"]').css('z-index', yu.top_zindex);
-            }
-            if (typeof callback === 'function') {
-                callback.call(ythis, msgindex);
-            }
-        });
-        return this;
-    };
+  win.YSZ.prototype.com_msg = function (msg, options, func, showTop, callback) {
+    var ythis = this;
+    layui.use(['jquery', 'layer', 'yszutil'], function () {
+      var $ = layui.jquery,
+        yu = layui.yszutil,
+        msgindex = layer.msg(msg, options, func);
+      if (showTop || showTop === undefined) {
+        $('.layui-layer-shade').css('z-index', yu.top_zindex);
+        $('.layui-layer-shade').next('[type="dialog"]').css('z-index', yu.top_zindex);
+      }
+      if (typeof callback === 'function') {
+        callback.call(ythis, msgindex);
+      }
+    });
+    return this;
+  };
 }(window);

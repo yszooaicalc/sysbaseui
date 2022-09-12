@@ -8,7 +8,7 @@
             _stor = win.localStorage,
             cache_suffix = 'ysz_',
             token_cache_key = '202208131029_',
-            comdata_cache_key = '202208131042_',
+            objectdata_cache_key = '202208131042_',
             /**
              * 删除缓存
              * @param {*} obj 临时或持久缓存，window.sessionStorage ，window.localStorage
@@ -141,11 +141,11 @@
                 reformcomdata: function (com) {
                     var yu = this;
                     var newcom = $.extend({}, com, {
-                        PARAMLIST: yu.reformcomparamdata(com.PARAMLIST, 0)
+                        PARAMLIST: yu.handleobjectparamdata(com.PARAMLIST, 0)
                     });
                     return newcom;
                 },
-                reformcomparamdata: function (paramlist, pid) {
+                handleobjectparamdata: function (paramlist, pid) {
                     var newpl = [];
                     for (var i = 0; i >= 0 && i < paramlist.length; i++) {
                         var p = paramlist[i];
@@ -157,12 +157,12 @@
                     }
                     return newpl;
                 },
-                getcomdata: function (id) {
+                getobjectdata: function (id) {
                     var yu = this,
                         defer = $.Deferred(),
                         opt = { id: id };
                     if (id) {
-                        var com = yu.store(comdata_cache_key + id);
+                        var com = yu.store(objectdata_cache_key + id);
                         if (com) {
                             defer.resolve(com);
                             return defer;
@@ -176,7 +176,7 @@
                             var com = null;
                             if (data.rows && data.rows.length > 0) {
                                 $.each(data.rows, function (i, n) {
-                                    yu.store(comdata_cache_key + id, n);
+                                    yu.store(objectdata_cache_key + id, n);
                                     if (n.id == id) {
                                         com = yu.reformcomdata(n);
                                     }
@@ -204,8 +204,24 @@
                 errhtml: function (msg) {
                     var html = '<div>' + (msg || '') + '</div>';
                     return html;
+                },
+                event_handle: function () {
+                    if (n.targettype == 'function') {
+                        var d = yszutil.functions[n.targetcode].call(y, {});
+                    }
+                },
+                bind_trigger_event: function (y, eventcode) {
+                    var rs = y.relations;
+                    if (rs && rs.length > 0) {
+                        $.each(rs, function (i, n) {
+                            if (n.START_EVENTCODE == eventcode) {
+
+                            }
+                        });
+                    }
                 }
             };
+
         /**
              * 全部替换
              * @param {string} searchValue 

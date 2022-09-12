@@ -1,14 +1,17 @@
 ;
 ! function (win) {
     win.YSZ.prototype.com_barchart = function (msg, options, func, showOnTop, callback) {
-        var y = this;
-        layui.use(['jquery', 'yszutil', 'echarts'], function () {
+        var defer = $.Deferred(),
+            y = this;
+        layui.use(['echarts'], function () {
             var $ = layui.jquery,
                 yu = layui.yszutil,
                 echarts = layui.echarts;
 
             // 接下来的使用就跟之前一样，初始化图表，设置配置项
-            var myChart = echarts.init($(y.elem)[0]);
+            var $chart = $(y.elem),
+                myChart = echarts.init($chart[0]);
+            win.SETYSZDOM.call(y, $chart);
             var option = {
                 xAxis: {
                     type: 'category',
@@ -26,7 +29,8 @@
             };
             myChart.setOption(option);
 
+            defer.resolve(y);
         });
-        return this;
+        return defer;
     };
 }(window); 

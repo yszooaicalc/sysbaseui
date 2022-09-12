@@ -6,7 +6,7 @@ layui.define('jquery', function (exports) {
         _stor = window.localStorage,
         cache_suffix = 'ysz_',
         token_cache_key = '202208131029_',
-        comdata_cache_key = '202208131042_',
+        objectdata_cache_key = '202208131042_',
         /**
          * 删除缓存
          * @param {*} obj 临时或持久缓存，window.sessionStorage ，window.localStorage
@@ -123,12 +123,12 @@ layui.define('jquery', function (exports) {
                 option['data'] = post_data(opt['data'] || {});
                 $.ajax(option);
             },
-            getcomdata: function (id) {
+            getobjectdata: function (id) {
                 var yu = this,
                     defer = $.Deferred(),
                     opt = { id: id };
                 if (id) {
-                    var com = yu.store(comdata_cache_key + id);
+                    var com = yu.store(objectdata_cache_key + id);
                     if (com) {
                         defer.resolve(com);
                         return defer;
@@ -142,7 +142,7 @@ layui.define('jquery', function (exports) {
                         var com = null;
                         if (data.rows && data.rows.length > 0) {
                             $.each(data.rows, function (i, n) {
-                                yu.store(comdata_cache_key + id, n);
+                                yu.store(objectdata_cache_key + id, n);
                                 if (n.id == id) {
                                     com = n;
                                 }

@@ -14,6 +14,6 @@
                 callback.call(ythis, msgindex);
             }
         });
-        return this;
+        return y;
     };
 }(window);
