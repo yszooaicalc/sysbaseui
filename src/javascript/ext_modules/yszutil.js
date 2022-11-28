@@ -5,7 +5,7 @@
         _stor = win.localStorage,
         cache_suffix = 'ysz_',
         token_cache_key = '202208131029_',
-        objectdata_cache_key = '202208131042_',
+        com_cache_key = 'com_',
         /**
          * 删除缓存
          * @param {*} obj 临时或持久缓存，window.sessionStorage ，window.localStorage
@@ -184,7 +184,7 @@
                 }
                 return rv
             },
-            handleobjectparamdata: function (plist, param) {
+            handle_com_param: function (plist, param) {
                 var newpl = [],
                     paramlist = $.extend({}, plist),
                     getjson_f = function (type, pid) {
@@ -228,14 +228,22 @@
                 }
                 return newpl;
             },
-            getobjectdata: function (id) {
-                var yu = this,
+            loadhtml: function (msg) {
+                var html = '<div>' + (msg || '') + '</div>';
+                return html;
+            },
+            errhtml: function (msg) {
+                var html = '<div>' + (msg || '') + '</div>';
+                return html;
+            },
+            get_com: function (id) {
+                var y = yszutil,
                     defer = $.Deferred(),
                     opt = { id: id };
                 if (id) {
-                    var object_info = yu.store(objectdata_cache_key + id);
-                    if (object_info) {
-                        defer.resolve(object_info);
+                    var com = y.store(com_cache_key + id);
+                    if (com) {
+                        defer.resolve(com);
                         return defer;
                     }
                 } else {
@@ -244,18 +252,18 @@
                 }
                 opt.success = function (data, textStatus) {
                     if (data.status == 1) {
-                        var object_info = null;
+                        var com = null;
                         if (data.ROWS && data.ROWS.length > 0) {
                             var olist = data.ROWS;
                             $.each(olist, function (i, n) {
-                                yu.store(objectdata_cache_key + id, n);
+                                y.store(com_cache_key + id, n);
                                 if (n.ID == id) {
-                                    object_info = $.extend({}, n);
+                                    com = n;
                                 }
                             });
                         }
-                        if (object_info) {
-                            defer.resolve(object_info);
+                        if (com) {
+                            defer.resolve(com);
                         } else {
                             defer.reject('组件不存在,请检查id是否正确!');
                         }
@@ -266,68 +274,10 @@
                 opt.error = function (XMLHttpRequest, textStatus, errorThrown) {
                     defer.reject('访问服务器错误,请检查是否连接网络!');
                 };
-                yu.ajax({ data: opt });
+                y.ajax({ data: opt });
                 return defer;
             },
-            loadhtml: function (msg) {
-                var html = '<div>' + (msg || '') + '</div>';
-                return html;
-            },
-            errhtml: function (msg) {
-                var html = '<div>' + (msg || '') + '</div>';
-                return html;
-            },
-            relations: function (ev) {
-                var y = this,
-                    ev;
-                if (ev) {
-                    var to_f = function (start_ev, param) {
-                        //com 组件,func 组件方法,event 组件事件,pfunc 公共方法 
-                        var ysz = this,
-                            classType = start_ev.OBJECT_INFO.CLASSTYPE,
-                            end_ev = start_ev.NEXT_OBJECT_INFO;
-                        if (classType == 'com') {
-                            ysz = win.FINDYSZ(start_ev.OBJECT_INFO.ID);
-                            if (ysz) {
-                                if (end_ev) to_f.call(ysz, end_ev, param);
-                            } else {
-                                ysz = new win.YSZ(start_ev.OBJECT_INFO.OBJECT_ID, start_ev.OBJECT_INFO.ELEM, param, function (ysz) {
-                                    if (end_ev) to_f.call(ysz, end_ev, param);
-                                });
-                            }
-                        } else if (classType == 'func') {
-                            var func = y[classType + '_' + start_ev.OBJECT_INFO.CODE];
-                            if (typeof func === 'function') {
-                                var p = yszutil.handleobjectparamdata(com.PARAMLIST, param);
-                                func(...p).done(function (d) {
-                                    if (end_ev) to_f.call(ysz, end_ev, d || param);
-                                });
-                            }
-                        } else if (classType == 'event') {
-                            var event_f = y[classType + '_' + start_ev.OBJECT_INFO.CODE];
-                            if (typeof event_f === 'function') {
-                                event_f();
-                                if (end_ev) to_f.call(ysz, end_ev, param);
-                            }
-                        } else if (classType == 'pfunc') {
-                            var pfunc = yszutil.pfunc[classType + '_' + start_ev.OBJECT_INFO.CODE];
-                            if (typeof pfunc === 'function') {
-                                var p = yszutil.handleobjectparamdata(com.PARAMLIST, param);
-                                pfunc(...p).done(function (d) {
-                                    if (end_ev) to_f.call(ysz, end_ev, d || param);
-                                });
-                            }
-                        }
-                    };
-                    to_f.call(y, ev);
-                }
-            },
-            pfunc: {
-
-            },
-            com: {
-
-            }
+            com: {}
         };
 
     /**

@@ -45,8 +45,8 @@ function basecss() {
 function basejs() {
     return src(['src/javascript/ysz_config.js',
         'src/javascript/layui.js',
-        'src/javascript/ysz.js',
-        'src/javascript/ysz/**/*.js'
+        'src/javascript/ysz/**/*.js',
+        'src/javascript/ysz.js'
     ])
         .pipe(uglify())
         .pipe(concat('base.js'))
@@ -101,8 +101,8 @@ function basecss_debug() {
 function basejs_debug() {
     return src(['src/javascript/ysz_config.js',
         'src/javascript/layui.js',
-        'src/javascript/ysz.js',
-        'src/javascript/ysz/**/*.js'
+        'src/javascript/ysz/**/*.js',
+        'src/javascript/ysz.js'
     ])
         .pipe(concat('base.js'))
         .pipe(dest('wwwroot_debug/js'))

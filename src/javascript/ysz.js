@@ -1,72 +1,48 @@
 ;
 ! function (win) {
     "use strict";
+
     layui.use(['jquery', 'layer', 'yszutil'], function () {
         win.$ = layui.jquery;
-        var yu = win.ysz = layui.yszutil;
-
-        /**
-         * 
-         * @param {*} id 组件ID  
-         */
-        win.FINDYSZ = function (id) {
-            var $ysz = $('[yszcom]#' + id),
-                ysz;
-            if ($ysz.length > 0) {
-                ysz = $ysz.data('ysz');
-            }
-            return ysz;
-        };
-        win.SETYSZDOM = function ($dom) {
-            var y = this;
-            $dom.attr({ id: id, 'yszcom': 'yszcom' }).data('ysz', y);
-        };
-        /**
-         * 
-         * @param {*} id 组件ID
-         * @param {*} elem 绑定组件的元素 
-         */
-        win.YSZ = function (id, elem, param, callback) {
-            var y = this,
-                render = function (com) {
-                    if (elem) { $(elem).empty(); }
-                    var comf = y[com.CLASSTYPE + '_' + com.CODE];
-                    if (typeof comf === 'function') {
-                        var p = yu.handleobjectparamdata(com.PARAMLIST, param);
-                        comf(...p).done(function (ysz) {
-                            if (typeof callback == 'function') {
-                                callback(ysz);
-                            }
-                        });
-                    }
-                };
-            if (!id || typeof id !== 'number') {
+        var y = layui.yszutil;
+        win.ysz = function (id, elem, queryparam, callback) {
+            if (!id) {
                 console.error('传输参数不正确，无法正常运行!');
                 return;
             }
-            this.id = id;
-            this.elem = elem;
-            this.param = param;
+            //先从界面找
+            var $com = $('[com_id=' + id + ']');
+            if ($com.length > 0) {
+                var cominfo = $com.data('cominfo'),
+                    com = y.handle_com_param(cominfo, queryparam);
+                if (typeof callback == 'function') {
+                    callback(com);
+                }
+                return;
+            }
+            //找不到就生成 
             if (elem) {
                 $(elem).empty();
-                $(elem).appendTo(yu.loadhtml());
+                $(elem).appendTo(y.loadhtml());
             }
-            if (id) {
-                yu.getobjectdata(id).done(function (com) {
-                    this.com = com;
-                    render(com);
-                }).fail(function (err) {
-                    if (elem) {
-                        $(elem).empty();
-                        $(elem).appendTo(yu.errhtml(err));
-                    }
-                });
-            } else {
+            y.get_com(id).done(function (cominfo) {
+                if (elem) { $(elem).empty(); }
+                var comf = y.com[cominfo.CODE];
+                if (typeof comf === 'function') {
+                    var com = y.handle_com_param(cominfo, queryparam);
+                    comf(...com.paramlist).done(function ($com) {
+                        if (typeof callback == 'function') {
+                            $com.attr({ 'com_id': id }).data('cominfo', cominfo);
+                            callback(com);
+                        }
+                    });
+                }
+            }).fail(function (err) {
                 if (elem) {
                     $(elem).empty();
-                    $(elem).appendTo(yu.errhtml());
+                    $(elem).appendTo(y.errhtml(err));
                 }
-            }
-        };
+            });
+        }
     });
 }(window);
