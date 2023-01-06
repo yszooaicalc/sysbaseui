@@ -59,6 +59,7 @@ CREATE TABLE `proinfo` (
   `REMARK` varchar(1000) DEFAULT NULL,
   `LOGIN_PAGEID` bigint DEFAULT NULL,
   `HOME_PAGEID` bigint DEFAULT NULL,
+  `PAGEID_LIST` varchar(4000) DEFAULT NULL,
   PRIMARY KEY (`ID`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
@@ -85,4 +86,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2023-01-06 20:45:23
+-- Dump completed on 2023-01-06 21:01:34
